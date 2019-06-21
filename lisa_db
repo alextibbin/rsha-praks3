@@ -1,0 +1,25 @@
+#!/bin/bash
+kasutajanimi=$1 #kasutaja ja parooli loomine
+parool=$(pwgen 6)
+dbnimi=$kasutajanimi
+echo $kasutajanimi
+echo $parool
+#sql kasud
+k1="CREATE DATABASE IF NOT EXISTS $;"
+k2="GRANT USAGE ON *.* TO $@localhost IDENTIFIED BY '$parool';"
+k3="GRANT ALL PRIVILEGES ON $dbnimi.* TO $kasutajanimi@localhost;"
+k4="FLUSH PRIVILEGES;"
+SQL="${k1}${k2}${k3}${k4}"
+
+#kasutajate lisamine
+
+echo $sql
+sudo mysql -e "$sql"
+if [ $? -eq 0 ]; then
+        touch /home/$kasutajanimi/.my.cnf
+        echo "[Client]" >> /home/$kasutajanimi/.my.cnf
+        echo "user=$kasutajanimi" >> /home/$kasutajanimi/.my.cnf
+        echo "password=$parool" >> /home/$kasutajanimi/.my.cnf
+        chown $kasutajanimi:$kasutajanimi /home/$kasutajanimi/.my.cnf
+        chmod 400 /home/$kasutajanimi/.my.cnf
+fi
